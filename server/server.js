@@ -13,6 +13,17 @@ app.use('/', express.static(path.join(__dirname, '../public')));
 
 io.on('connection', (socket) => {
   console.log('New user connected');
+
+  socket.emit('newMessage', {
+    from: 'Moshiko Katan',
+    text: 'Wat\'s going on bro?!?!?!',
+    createdAt: 98743265
+  });
+
+  socket.on('createMessage', (message) => {
+    console.log('createMessage received:', message);
+  });
+
   socket.on('disconnect', () => {
     console.log('Client has disconnected...');
   });
@@ -21,4 +32,5 @@ io.on('connection', (socket) => {
 server.listen(port, () => {
   console.log(`up on PORT:${port}`);
 });
+
 
