@@ -12,10 +12,24 @@ const io = socketIO(server);
 app.use('/', express.static(path.join(__dirname, '../public')));
 
 io.on('connection', (socket) => {
+  // log to console
   console.log('New user connected');
+  // broadcast to all other users
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'A new user just joined the chat',
+    createdAt: new Date().getTime()
+  });
+  // personal message to new user
+  socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app',
+    createdAt: new Date().getTime()
+  });
 
   socket.on('createMessage', (message) => {
-    // console.log('createMessage received:', message);
+    console.log('createMessage received:', message);
+
     io.emit('newMessage', {
       from: message.from,
       text: message.text,
@@ -24,7 +38,13 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
+    // log to console
     console.log('Client has disconnected...');
+    // send message to all users
+    socket.broadcast.emit('newMessage', {
+      from: 'Admin',
+      text: 'A user has disconnected'
+    });
   });
 });
 
